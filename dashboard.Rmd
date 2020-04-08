@@ -138,12 +138,13 @@ Last update at **`r Sys.time()`**
 ```
 
 ```{r echo=FALSE, message=F, warning=F, fig.height = 4, fig.width = 6}
+  animate <- T
   ani.options(end_pause = 30 )
   options(
     gganimate.nframes = 120, 
     gganimate.fps=8
   )
-  animate <- T
+
   if (animate) {
     p <- ggplot(
       data = data_anim,
@@ -414,7 +415,7 @@ d_i_long_total$StateUt[d_i_long_total$StateUt == "Telengana"] <- "Telangana"
 ```
 
 
-```{r echo=FALSE, fig.cap="Statewise Split", message=FALSE, warning=FALSE, fig.height = 8, fig.width = 8}
+```{r echo=FALSE, fig.cap="Statewise Split", message=FALSE, warning=FALSE, fig.height = 10, fig.width = 8}
 
   ggplot(
       data = data_statewise %>% filter(Source == 'Crowd Source'), 
@@ -441,7 +442,7 @@ d_i_long_total$StateUt[d_i_long_total$StateUt == "Telengana"] <- "Telangana"
     scale_y_discrete(position = "right") +
     scale_x_date(position = "top", date_breaks = '7 days') +
     scale_radius(
-      range = c(1, 15),
+      range = c(1, 12),
       trans = "identity",
       guide = "legend"
     ) + 
@@ -457,7 +458,7 @@ Code: https://github.com/rahulnyk/COVID19_India/blob/master/IndiaTimeseries_v3.R
 
 #### State wise split of cumulative number of cases as per last update.
 
-```{r echo=FALSE, fig.cap="Statewise Split", message=FALSE, warning=FALSE, fig.height = 8, fig.width = 8}
+```{r echo=FALSE, fig.cap="Statewise Split", message=FALSE, warning=FALSE, fig.height = 5, fig.width = 8}
  ggplot(
       data = d_i_long_total, 
       aes(x = reorder( StateUt, Cumulative ), y = Cumulative, fill = Source)
