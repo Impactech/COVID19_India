@@ -117,7 +117,7 @@ knitr::opts_chunk$set(fig.width=8, fig.height=5)
 **Crowd Sourced Data: ** https://www.covid19india.org/
 
 **Official Data: ** Ministry of Health and Family Welfare Data hosted on this repository
-https://github.com/rahulnyk/covid19_india_data
+https://github.com/Impactech/covid19_india_data
 
 **World Data: ** Repository hosted by Johns Hopkins CSSE
 https://github.com/CSSEGISandData/COVID-19
@@ -191,10 +191,16 @@ Last update at **`r Sys.time()`**
 
 Data: Crowd sourced
 
-Code: https://github.com/rahulnyk/COVID19_India/blob/master/IndiaTimeseriesAnimation.R
+Code: https://github.com/Impactech/COVID19_India/blob/master/IndiaTimeseriesAnimation.R
 
-## Different cross sections of COVID19 data {.tabset .tabset-fade .tabset-pills}
+## Different cross sections of COVID19 data {.tabset .tabset-fade}
+
+&nbsp;
+&nbsp;
+
 ### **Pan India**
+
+&nbsp;
 
 ####  Daily growth rate 
 The solid lines are smoothed conditional means, which indicated the overall trend. 
@@ -239,7 +245,10 @@ $$G_{current} = (Total_{previous}- Total_{current})/Total_{previous}$$
 #   ) %>% config(displayModeBar = F)
 ```
 
-Code: https://github.com/rahulnyk/COVID19_India/blob/master/IndiaGrowthRate_v2.R
+Code: https://github.com/Impactech/COVID19_India/blob/master/IndiaGrowthRate_v2.R
+
+
+&nbsp;
 
 #### New cases per day
 
@@ -277,9 +286,9 @@ Code: https://github.com/rahulnyk/COVID19_India/blob/master/IndiaGrowthRate_v2.R
 
 ```
 
-Code: https://github.com/rahulnyk/COVID19_India/blob/master/DailyNewCasesIndia.R
+Code: https://github.com/Impactech/COVID19_India/blob/master/DailyNewCasesIndia.R
 
-
+&nbsp;
 
 #### Cumulative
 
@@ -317,9 +326,11 @@ Code: https://github.com/rahulnyk/COVID19_India/blob/master/DailyNewCasesIndia.R
 
 ```
 
-Code: https://github.com/rahulnyk/COVID19_India/blob/master/IndiaCumulativeCases_v2.R
+Code: https://github.com/Impactech/COVID19_India/blob/master/IndiaCumulativeCases_v2.R
 
 ### **Weekly**
+
+&nbsp;
 
 Since the daily growth rate can be noisy, it may be helpful to see the weekly mean of daily growth rate to identify the tapering. 
 
@@ -382,6 +393,8 @@ $$ G_{WeeklyMean} = NewCases_{CurrentWeek}*100/(Sunday_{Previous} - Sunday_{Late
 
 
 ### **Statewise** 
+
+&nbsp;
 
 #### Statewise growth in cumulative number of cases. 
 
@@ -453,8 +466,11 @@ d_i_long_total$StateUt[d_i_long_total$StateUt == "Telengana"] <- "Telangana"
 
 Data: Crowd sourced
 
-Code: https://github.com/rahulnyk/COVID19_India/blob/master/IndiaTimeseries_v3.R
+Code: https://github.com/Impactech/COVID19_India/blob/master/IndiaTimeseries_v3.R
 
+
+
+&nbsp;
 
 #### State wise split of cumulative number of cases as per last update.
 
@@ -477,9 +493,12 @@ Code: https://github.com/rahulnyk/COVID19_India/blob/master/IndiaTimeseries_v3.R
   # ) %>% config(displayModeBar = F)
 ```
 
-Code: https://github.com/rahulnyk/COVID19_India/blob/master/IndiaStateWise.R
+Code: https://github.com/Impactech/COVID19_India/blob/master/IndiaStateWise.R
+
 
 ### **Agewise**
+
+&nbsp;
 
 #### Agewise split of cases in India
 
@@ -507,9 +526,11 @@ Data available for **`r nrow(dc_age_i)`** cases
 
 ```
 
-Code: https://github.com/rahulnyk/COVID19_India/blob/master/IndiaAgewise.R
+Code: https://github.com/Impactech/COVID19_India/blob/master/IndiaAgewise.R
 
 ### **World**
+
+&nbsp;
 
 #### Global Growth rate
 
@@ -539,6 +560,9 @@ Code: https://github.com/rahulnyk/COVID19_India/blob/master/IndiaAgewise.R
 
 ```
 
+
+&nbsp;
+
 #### Global Daily New Cases
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.height = 4, fig.width = 8}
@@ -558,7 +582,7 @@ Code: https://github.com/rahulnyk/COVID19_India/blob/master/IndiaAgewise.R
     geom_smooth(aes(group = Status), se = F, alpha = 0.1, size = 1, linetype=1) + 
     geom_line(linetype = '11', alpha = 0.8, size = 1) + 
     geom_point(alpha = 0.8, size = 3, stroke = 1, shape = 21, fill = 'white') + 
-    labs(y = "Growth rate in Percentage") + # labs(title = "Groth rate by date") + 
+    labs(y = "Number of New Cases (Log)") + # labs(title = "Groth rate by date") + 
     scale_fill_viridis_d(option=pal, end = 0.6) + 
     scale_color_viridis_d(option=pal, end = 0.6) + 
     # ylim(c(-10, 50)) +
@@ -567,6 +591,9 @@ Code: https://github.com/rahulnyk/COVID19_India/blob/master/IndiaAgewise.R
     plot_theme 
 
 ```
+
+
+&nbsp;
 
 #### Global Cumulative cases
 
@@ -577,7 +604,7 @@ Code: https://github.com/rahulnyk/COVID19_India/blob/master/IndiaAgewise.R
       ) + 
     geom_area(position = "stack", stat = "identity") +
     # scale_y_continuous(trans = 'log2') +
-    labs(y = "Number of cases (thousands)") + 
+    labs(y = "Cumulative Number of cases (thousands)") + 
     # labs(title = "Reported number of cases by date") + 
     scale_fill_viridis_d(option=pal, begin = 0, end = 0.9) + 
     scale_color_viridis_d(option=pal, begin = 0, end = 0.9) +
