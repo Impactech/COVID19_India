@@ -383,7 +383,7 @@ $$ G_{WeeklyMean} = NewCases_{CurrentWeek}*100/(Sunday_{Previous} - Sunday_{Late
     coord_cartesian(clip = F) + 
     scale_x_date(breaks = as.Date( unique(dweek$WeekEnd) ), date_labels = "%A, %b %d") + 
     theme(
-      axis.text.x = element_text(face = 'bold'),
+      axis.text.x = element_text(face = 'bold', angle = 30, hjust = 1),
       panel.grid.minor = element_blank(),
       axis.title.y = element_blank(),
       strip.text.x = element_text(angle = 0, hjust = 0, size = 10, face = 2)
