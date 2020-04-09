@@ -91,9 +91,10 @@ knitr::opts_chunk$set(fig.width=8, fig.height=5)
   data_rate_w <- data_total_w %>% 
     group_by(Status) %>%
     mutate(TotalPrev = lag(Total, default = 0, order_by = Date )) %>% 
+    mutate(DelTotal = Total - TotalPrev) %>%
     mutate(DatePrev = lag(Date, order_by = Date )) %>%
     filter(!is.na(DatePrev)) %>% mutate(DelDay = as.integer(Date-DatePrev)) %>%
-    mutate( Rate1 = (Total - TotalPrev)*100/(DelDay*Total) ) %>%
+    mutate( Rate1 = DelTotal*100/(DelDay*TotalPrev) ) %>%
     ungroup() %>%
     filter(!(Status %in% c('Hospitalized', 'Deaths')))
 
@@ -123,6 +124,7 @@ https://github.com/CSSEGISandData/COVID-19
 
 Last update at **`r Sys.time()`**
 
+
 ### Statewise Progression of cases with time
 
 ```{r include=F}
@@ -137,7 +139,7 @@ Last update at **`r Sys.time()`**
     mutate(label =  paste(Total, StateUt, sep=" | "))
 ```
 
-```{r echo=FALSE, message=F, warning=F, fig.height = 4, fig.width = 6}
+```{r echo=FALSE, message=F, warning=F, fig.height = 5, fig.width = 10}
   animate <- T
   ani.options(end_pause = 30 )
   options(
@@ -164,7 +166,7 @@ Last update at **`r Sys.time()`**
       panel.grid.major = element_blank(),
       panel.grid.minor = element_blank(),
       axis.title.x = element_blank(),
-      plot.title = element_text(hjust = 1, size=13)
+      plot.title = element_text(hjust = 0.5, size=13)
       ) +
     coord_cartesian(clip = 'off')  +
     scale_color_viridis_c(option="inferno", direction = -1) +
@@ -192,8 +194,6 @@ Data: Crowd sourced
 Code: https://github.com/rahulnyk/COVID19_India/blob/master/IndiaTimeseriesAnimation.R
 
 ## Different cross sections of COVID19 data {.tabset .tabset-fade .tabset-pills}
-
-
 ### **Pan India**
 
 ####  Daily growth rate 
@@ -338,7 +338,7 @@ $$ G_{WeeklyMean} = NewCases_{CurrentWeek}*100/(Sunday_{Previous} - Sunday_{Late
     group_by(Date, Source) %>%
     summarise(Total = sum(Total)) %>% group_by(Source) %>%
     mutate( TotalPrev = lag(Total, default = 0, order_by = Date)) %>%
-    filter( Date > ymd('2020-03-01')	) %>%
+    filter( Date > ymd('2020-02-20')	) %>%
     mutate( NewCases = (Total - TotalPrev) ) %>%
     ungroup() %>%
     mutate(week = lubridate::isoweek(Date)) %>% 
@@ -415,7 +415,7 @@ d_i_long_total$StateUt[d_i_long_total$StateUt == "Telengana"] <- "Telangana"
 ```
 
 
-```{r echo=FALSE, fig.cap="Statewise Split", message=FALSE, warning=FALSE, fig.height = 10, fig.width = 8}
+```{r echo=FALSE, fig.cap="Statewise Split", message=FALSE, warning=FALSE, fig.height = 8, fig.width = 8}
 
   ggplot(
       data = data_statewise %>% filter(Source == 'Crowd Source'), 
@@ -527,18 +527,45 @@ Code: https://github.com/rahulnyk/COVID19_India/blob/master/IndiaAgewise.R
     legend.position = c(0.2, 0.8)
   )
   ggplot(data = data_rate_w,  aes(x = Date, y = Rate1, color = Status, fill = Status)) + 
-    geom_smooth(aes(group = Status), alpha = 0.2, size = 0.6, linetype=1) + 
-    geom_point(alpha = 0.2, size=2) + geom_line(alpha = 0.4) +
+    geom_smooth(aes(group = Status), se = F, alpha = 1, size = 1, linetype=1) + 
+    geom_line(linetype = '11', alpha = 0.8, size = 1) + 
+    geom_point(alpha = 0.6, size = 3, stroke = 1, shape = 21, fill = 'white') + 
     labs(y = "Growth rate in Percentage") + # labs(title = "Groth rate by date") + 
     scale_fill_viridis_d(option=pal, end = 0.6) + 
     scale_color_viridis_d(option=pal, end = 0.6) + 
     ylim(c(-10, 50)) +
+    scale_x_date(date_breaks = '7 days') +
     plot_theme 
-  
-  # ggplotly(p) %>% layout(legend = list(
-  #     orientation = "h"
-  #   )
-  # ) %>% config(displayModeBar = F)
+
+```
+
+#### Global Daily New Cases
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.height = 4, fig.width = 8}
+  pal <- "viridis"
+
+  plot_theme <- theme_minimal() + theme(
+    axis.text=element_text(size=8, color = "darkgrey"), 
+    axis.title=element_text(size=10),
+    axis.title.x = element_blank(),
+    # panel.grid.minor = element_blank(),
+    panel.grid.major = element_blank(),
+    plot.title = element_text(size = 12, hjust = 0),
+    legend.title = element_blank(), 
+    legend.position = c(0.2, 0.8)
+  )
+  ggplot(data = data_rate_w,  aes(x = Date, y = DelTotal, color = Status, fill = Status)) + 
+    geom_smooth(aes(group = Status), se = F, alpha = 0.1, size = 1, linetype=1) + 
+    geom_line(linetype = '11', alpha = 0.8, size = 1) + 
+    geom_point(alpha = 0.8, size = 3, stroke = 1, shape = 21, fill = 'white') + 
+    labs(y = "Growth rate in Percentage") + # labs(title = "Groth rate by date") + 
+    scale_fill_viridis_d(option=pal, end = 0.6) + 
+    scale_color_viridis_d(option=pal, end = 0.6) + 
+    # ylim(c(-10, 50)) +
+    scale_x_date(date_breaks = '7 days') +
+    scale_y_continuous(trans = 'log2' ) +
+    plot_theme 
+
 ```
 
 #### Global Cumulative cases
