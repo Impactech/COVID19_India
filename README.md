@@ -20,6 +20,7 @@ The data is compiled using the daily updates about the outbreak on Ministry of H
 
 Will try to keep it as updated as possible. Please feel free point out any mistakes. 
 
-The data presented in this project carry inherent uncertainties. Use of these data for public health or policy making should only be done after an exploration of the methods and assumptions presented
+---
+    The data presented in this project carry inherent uncertainties. Use of these data for public health or policy making should only be done after an exploration of the methods and assumptions presented
 
-Impactech Team 
+### Impactech Team 
