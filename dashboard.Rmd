@@ -106,11 +106,15 @@ knitr::opts_chunk$set(fig.width=8, fig.height=5)
 ```{r echo=F, results='asis', layout="l-body-outset"}
 
   data_today <- data_i_aggregated_long %>%
-    filter(Date == max(Date)) %>%
+    filter(Date == Sys.Date() ) %>%
     pivot_wider(values_from = Cumulative, names_from = Source) %>%
     select(-c(Date)) %>% filter(!(Status %in% c('NA', NA)))
-  kable(data_today) %>% kable_styling(
-    bootstrap_options = c("striped", "hover"), full_width = F, position = 'float_right')
+  
+  kable(data_today) %>% 
+    kable_styling(
+      bootstrap_options = c("striped", "hover"), 
+      full_width = F, 
+      position = 'float_right')
   
 ```
 
@@ -125,7 +129,16 @@ https://github.com/CSSEGISandData/COVID-19
 Last update at **`r Sys.time()`**
 
 
-### Statewise Progression of cases with time
+## Different cross sections of COVID19 data {.tabset .tabset-fade}
+
+&nbsp;
+&nbsp;
+
+### **Progression**
+
+&nbsp;
+
+Statewise progression of the cumulative number of cases against the number of days since first report
 
 ```{r include=F}
   data_anim <- data_i_total %>% 
@@ -139,13 +152,14 @@ Last update at **`r Sys.time()`**
     mutate(label =  paste(Total, StateUt, sep=" | "))
 ```
 
-```{r echo=FALSE, message=F, warning=F, fig.height = 5, fig.width = 10}
-  animate <- T
+```{r animation, echo=FALSE, message=F, warning=F, fig.height = 6, fig.width = 10}
   ani.options(end_pause = 30 )
   options(
     gganimate.nframes = 120, 
     gganimate.fps=8
   )
+  
+  animate <- T
 
   if (animate) {
     p <- ggplot(
@@ -188,15 +202,9 @@ Last update at **`r Sys.time()`**
   }
 ```
 
-
 Data: Crowd sourced
 
 Code: https://github.com/Impactech/COVID19_India/blob/master/IndiaTimeseriesAnimation.R
-
-## Different cross sections of COVID19 data {.tabset .tabset-fade}
-
-&nbsp;
-&nbsp;
 
 ### **Pan India**
 
