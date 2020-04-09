@@ -389,12 +389,17 @@ $$ G_{WeeklyMean} = NewCases_{CurrentWeek}*100/(Sunday_{Previous} - Sunday_{Late
     labs(y = "Number of new cases reported")  + 
     scale_fill_viridis_d(end = 0.6) + scale_color_viridis_d(end=0.6) + 
     coord_cartesian(clip = F) + 
-    scale_x_date(breaks = as.Date( unique(dweek$WeekEnd) ), date_labels = "%A, %b %d") + 
+    scale_x_date(
+        breaks = as.Date( unique(dweek$WeekEnd) ), 
+        date_labels = "%A, %b %d"
+        ) + 
     theme(
       axis.text.x = element_text(face = 'bold', angle = 30, hjust = 1),
       panel.grid.minor = element_blank(),
       axis.title.y = element_blank(),
-      strip.text.x = element_text(angle = 0, hjust = 0, size = 10, face = 2)
+      strip.text.x = element_text(angle = 0, hjust = 0, size = 10, face = 2),
+      legend.position = 'top',
+      plot.margin = margin(20, 10, 10, 10)
     )
 
 ```
