@@ -5,9 +5,10 @@ build_crowd_data <- function () {
     select(-c("source_1", "source_2", "source_3", "backup_notes", "notes", "estimated_onset_date")) %>%
     filter(! is.na(date_announced) ) %>%
     mutate(Date = dmy(date_announced)) %>%
-    select(Date, detected_state, detected_city, age_bracket, current_status) %>%
+    select(Date, detected_state, detected_city, detected_district, age_bracket, current_status) %>%
     rename(
-      StateUt = "detected_state", 
+      StateUt = "detected_state",
+      District = "detected_district",
       City = "detected_city",
       Status = "current_status", 
       AgeBracket = "age_bracket"
