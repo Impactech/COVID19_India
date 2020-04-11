@@ -206,6 +206,7 @@ Data: Crowd sourced
 
 Code: https://github.com/Impactech/COVID19_India/blob/master/IndiaTimeseriesAnimation.R
 
+
 ### **Pan India**
 
 &nbsp;
@@ -623,6 +624,8 @@ Code: https://github.com/Impactech/COVID19_India/blob/master/IndiaAgewise.R
     scale_color_viridis_d(option=pal, begin = 0, end = 0.9) +
     plot_theme
 ```
+
+
 
 ##
 
