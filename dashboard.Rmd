@@ -9,7 +9,7 @@ knit: (function(input_file, encoding) {
     output_file=file.path(
       dirname(input_file), 
       out_dir, 
-      'index.html'
+      'index.html'  
       )
     )
   })
@@ -358,7 +358,7 @@ $$ G_{WeeklyMean} = NewCases_{CurrentWeek}*100/(Sunday_{Previous} - Sunday_{Late
     group_by(Date, Source) %>%
     summarise(Total = sum(Total)) %>% group_by(Source) %>%
     mutate( TotalPrev = lag(Total, default = 0, order_by = Date)) %>%
-    filter( Date > ymd('2020-02-20')	) %>%
+    filter( Date > ymd('2020-03-01')	) %>%
     mutate( NewCases = (Total - TotalPrev) ) %>%
     ungroup() %>%
     mutate(week = lubridate::isoweek(Date)) %>% 
