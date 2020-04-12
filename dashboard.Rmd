@@ -631,7 +631,7 @@ Code: https://github.com/Impactech/COVID19_India/blob/master/IndiaAgewise.R
 
 ---
 
-This Dashboard is **[Hosted on Github](https://github.com/Impactech/COVID19_India)**
+This Dashboard is <a href="https://github.com/Impactech/COVID19_India" target="_blank">**Hosted On this Repo**</a>
 
 by [Rahul Nayak](https://www.linkedin.com/in/rahulnyk/)
 
