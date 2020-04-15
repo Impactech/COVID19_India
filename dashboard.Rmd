@@ -310,7 +310,7 @@ Code: https://github.com/Impactech/COVID19_India/blob/master/DailyNewCasesIndia.
 ```
 
 
-```{r echo=FALSE, fig.cap="Total number of COVID19 cases in India by Date", message=FALSE, warning=FALSE}
+```{r echo=FALSE, fig.cap="Total number of COVID19 cases in India by Date", message=FALSE, warning=FALSE, fig.height = 8, fig.width = 8}
 
   ggplot(
       data = data_split_status,
