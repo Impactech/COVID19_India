@@ -611,7 +611,7 @@ Data available for **`r nrow(dc_age_i)`** cases
 ```{r echo=FALSE,  message=FALSE, warning=FALSE, fig.height = 3, fig.width = 8}
 
   ggplot(data = dc_age_i, aes(x = AgeBracket, fill=Status)) +
-    geom_histogram(stat = "bin", position = "stack", bins = 40, color = 'white') +
+    geom_bar(stat = "bin", position = "stack", binwidth = 5, color = 'white') +
     scale_fill_viridis_d(option = 'magma', end = 0.9) + 
     theme_minimal() + 
     theme(
