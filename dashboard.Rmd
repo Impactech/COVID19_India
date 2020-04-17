@@ -636,6 +636,10 @@ Code: https://github.com/Impactech/COVID19_India/blob/master/IndiaAgewise.R
 
 &nbsp;
 
+#### Progression
+
+![](https://github.com/rahulnyk/covid19_timeseries_animation/blob/master/output.gif?raw=true)
+
 #### Global Growth rate
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, fig.height = 4, fig.width = 8}
