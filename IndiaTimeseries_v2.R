@@ -21,13 +21,11 @@ if (rebuild_dataframe) {
   dc <- dc$dc_i
 }
 
-data_total <- dc %>% group_by(Date) %>% summarize(Total = sum(Total)) %>%
-  mutate(StateUt = "India Total") %>% ungroup()
-
-data_state <- dc %>% select(StateUt, Date, Total) %>% ungroup()
+# data_total <- dc %>% group_by(Date) %>% summarize(Total = sum(Total)) %>%
+#   mutate(StateUt = "India Total") %>% ungroup()
 
 
-data <- rbind(data_total, data_state) %>%
+data <-  dc %>% select(StateUt, Date, Total) %>% ungroup() %>%
   mutate(Day = as.integer(strftime(Date, format = "%j")) ) %>%
   ###
   group_by(StateUt) %>% 
@@ -43,10 +41,10 @@ x_max <- max(data$DaysSince0)
 x_label <- x_max + 5
 
 labels <- data %>% 
+  filter(Total > 50) %>%
   filter(Date == yesterday) %>% 
   arrange( Total ) %>% 
-  # mutate(yend = (y_max/n())*row_number()) %>%
-  mutate( yend = ( 2^(  (log2(y_max)/(n()) )*row_number()  )) ) %>%
+  mutate(yend = (y_max/n())*row_number()) %>%
   select(StateUt, yend)
 
 data <- left_join(data, labels, by = c("StateUt") )
@@ -56,31 +54,35 @@ if (!animate) {
   data <- data %>% filter(Date == yesterday)
 }
 
-p <- ggplot(data = data, aes(x=DaysSince0, y=Total, fill = StateUt, size = Total^(0.3) ))  +
-  geom_point(shape = 21, color = 'white') + 
-  geom_line(size = 0.5, alpha=0.6)  +
+p <- ggplot(data = data, aes(x=DaysSince0, y=Total, fill = StateUt, size = Total^(0.5), color=StateUt ))  +
+  geom_point(shape = 21, color = 'black', alpha=0.6) + 
+  geom_line(size = 0.3, alpha=0.5)  +
   geom_label(
     aes(x=x_label, y = yend, label = label, fill=StateUt),
-    color='white', fontface = "bold",
-    hjust = 0, size=3) + 
-  geom_segment(aes(xend = x_label, yend = yend, color = StateUt), linetype = "11", size=0.4, alpha=0.5)
+    color='white',
+    hjust = 0, 
+    size=3) + 
+  geom_segment(aes(xend = x_label, yend = yend, color = StateUt), linetype = "11", size=0.2, alpha=0.5)
 
 p <- p +
   theme_minimal() +
   theme(
     axis.text=element_text(size=10, color = "darkgrey"),
-    axis.title=element_text(size=12)
-  ) +
-  theme( legend.position = 'off' ) +
-  theme(plot.title = element_text(size = 12, hjust = 0.5) ) +
-  theme(plot.margin = margin(15, 160, 15, 10)) +
+    axis.title=element_text(size=12),
+    legend.position = 'off',
+    plot.title = element_text(size = 12, hjust = 0.5),
+    plot.margin = margin(15, 120, 15, 10),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank()
+    ) +
   coord_cartesian(clip = 'off')  +
   scale_color_viridis_d(option="inferno", end = 0.9) + 
   scale_fill_viridis_d(option="inferno", end = 0.9) + 
   xlab("Number of day since first report") + 
   ylab("Number of cases (Cumulative)")  + 
-  scale_y_continuous(trans = 'log2') + scale_radius(
-    range = c(1, 15),
+  # scale_y_continuous(trans = 'log2') + 
+  scale_radius(
+    range = c(1, 7),
     trans = "identity",
     guide = "legend"
   )
@@ -92,14 +94,14 @@ if (animate) {
   p <- p + 
     transition_time(Date) + ease_aes('cubic-in-out') + 
     transition_reveal(Date)
-  animate(
-    p,
-    renderer=gifski_renderer( loop = T ), # render gif
-    # renderer=av_renderer(), # render video
-    res=150,
-    height = 720,
-    width = 1280
-  )
+    animate(
+      p,
+      renderer=gifski_renderer( loop = T ),
+      res=150,
+      height = 800,
+      width = 1000,
+      end_pause = 35
+    )
   anim_save(paste("output", ".gif", sep="" ), animation = last_animation())
 } else {
   p <- p + labs(

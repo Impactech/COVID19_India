@@ -1,3 +1,4 @@
+library(jsonlite)
 build_crowd_data <- function () {
   url <- "https://api.covid19india.org/raw_data.json"
   json <- fromJSON(txt=url)

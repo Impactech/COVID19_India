@@ -13,7 +13,7 @@ options(
   gganimate.fps=10
 )
 
-animate <- F
+animate <- T
 rebuild_dataframe <- T
 yesterday <- Sys.Date() -1 ## Change it to auto calculated last available date
 
@@ -48,7 +48,7 @@ data <- rbind(data_state, data_total) %>%
   mutate( max_days = max(days_since_0) ) %>%
   ungroup() %>%
   ###
-  filter(cumulative > 2) %>%
+  # filter(cumulative > 2) %>%
   mutate(label =  paste(cumulative, state_ut, sep=" | "))
 
 y_max <- max(data$cumulative)
@@ -58,8 +58,8 @@ x_label <- x_max + 5
 labels <- data %>% 
   filter(date == yesterday) %>% 
   arrange( cumulative ) %>% 
-  # mutate(yend = (y_max/n())*row_number()) %>%
-  mutate( yend = ( 2^(  (log2(y_max)/(n()) )*row_number()  )) ) %>%
+  mutate(yend = (y_max/n())*row_number()) %>%
+  # mutate( yend = ( 2^(  (log2(y_max)/(n()) )*row_number()  )) ) %>%
   select(state_ut, yend)
 
 data <- left_join(data, labels, by = c("state_ut") )
@@ -71,13 +71,13 @@ if (!animate) {
 
 p <- ggplot(data = data, aes(x=days_since_0, y=cumulative, color = state_ut, size = cumulative) ) +
   geom_point() + 
-  geom_line(size = 0.5, alpha=0.6)  +
+  geom_line(size = 0.4, alpha=0.2)  +
   geom_label(
     aes(x=x_label, y = yend, label = label, fill=state_ut),
     color='white', fontface = "bold",
     hjust = 0, size=3
   ) + 
-  geom_segment(aes(xend = x_label, yend = yend), linetype = "11", size=0.3, alpha=0.3)
+  geom_segment(aes(xend = x_label, yend = yend), linetype = "11", size=0.2, alpha=0.3)
 
 p <- p +
   theme_minimal() +
@@ -94,8 +94,8 @@ p <- p +
   scale_color_viridis_d(option="inferno", begin = 0, end = 0.9) + 
   scale_fill_viridis_d(option="inferno", begin = 0, end = 0.9) + 
   xlab("Number of day since first report") + 
-  ylab("Number of cases (Cumulative)")  + 
-  scale_y_continuous(trans = 'log2')
+  ylab("Number of cases (Cumulative)")  # + 
+  # scale_y_continuous(trans = 'log2')
 
 if (animate) {
   p <- p + labs(
