@@ -234,6 +234,9 @@ animate <- T
   }
 ```
 
+Code: https://github.com/Impactech/COVID19_India/blob/master/IndiaTimeseries_v2.R
+
+
 ```{r animation_1, echo=FALSE, message=F, warning=F, fig.height = 6, fig.width = 10}
   ani.options(end_pause = 30 )
   options(

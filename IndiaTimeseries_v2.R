@@ -8,8 +8,8 @@ library(janitor)
 source('./source_crowd_data.r')
 
 options(
-  gganimate.nframes = 100, 
-  gganimate.fps=10
+  gganimate.nframes = 120, 
+  gganimate.fps=8
 )
 
 animate <- T
@@ -55,23 +55,29 @@ if (!animate) {
 }
 
 p <- ggplot(data = data, aes(x=DaysSince0, y=Total, fill = StateUt, size = Total^(0.5), color=StateUt ))  +
-  geom_point(shape = 21, color = 'black', alpha=0.6) + 
+  geom_point(shape = 21, color = 'black', alpha=0.8) + 
   geom_line(size = 0.3, alpha=0.5)  +
   geom_label(
     aes(x=x_label, y = yend, label = label, fill=StateUt),
     color='white',
     hjust = 0, 
-    size=3) + 
-  geom_segment(aes(xend = x_label, yend = yend, color = StateUt), linetype = "11", size=0.2, alpha=0.5)
+    size=3
+    ) + 
+  geom_segment(
+    aes(xend = x_label, yend = yend, color = StateUt), 
+    linetype = "11", 
+    size=0.2, 
+    alpha=0.5
+    )
 
 p <- p +
   theme_minimal() +
   theme(
-    axis.text=element_text(size=10, color = "darkgrey"),
-    axis.title=element_text(size=12),
+    axis.text=element_text(size=8, color = "darkgrey"),
+    axis.title=element_text(size=8),
     legend.position = 'off',
-    plot.title = element_text(size = 12, hjust = 0.5),
-    plot.margin = margin(15, 120, 15, 10),
+    plot.title = element_text(size = 10, hjust = 0),
+    plot.margin = margin(15, 100, 15, 10),
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank()
     ) +
@@ -80,7 +86,6 @@ p <- p +
   scale_fill_viridis_d(option="inferno", end = 0.9) + 
   xlab("Number of day since first report") + 
   ylab("Number of cases (Cumulative)")  + 
-  # scale_y_continuous(trans = 'log2') + 
   scale_radius(
     range = c(1, 7),
     trans = "identity",
@@ -100,7 +105,7 @@ if (animate) {
       res=150,
       height = 800,
       width = 1000,
-      end_pause = 35
+      end_pause = 40
     )
   anim_save(paste("output", ".gif", sep="" ), animation = last_animation())
 } else {

@@ -59,7 +59,6 @@ labels <- data %>%
   filter(date == yesterday) %>% 
   arrange( cumulative ) %>% 
   mutate(yend = (y_max/n())*row_number()) %>%
-  # mutate( yend = ( 2^(  (log2(y_max)/(n()) )*row_number()  )) ) %>%
   select(state_ut, yend)
 
 data <- left_join(data, labels, by = c("state_ut") )
@@ -70,12 +69,12 @@ if (!animate) {
 }
 
 p <- ggplot(data = data, aes(x=days_since_0, y=cumulative, color = state_ut, size = cumulative) ) +
-  geom_point() + 
+  geom_point(shape = 21, color = 'black', alpha=0.8) + 
   geom_line(size = 0.4, alpha=0.2)  +
   geom_label(
     aes(x=x_label, y = yend, label = label, fill=state_ut),
-    color='white', fontface = "bold",
-    hjust = 0, size=3
+    color='white', 
+    hjust = 0, size=4
   ) + 
   geom_segment(aes(xend = x_label, yend = yend), linetype = "11", size=0.2, alpha=0.3)
 
