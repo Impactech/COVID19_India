@@ -12,13 +12,14 @@ rebuild_official_dataframe <- T
 
 if (rebuild_crowdsource_dataframe) {
   dc <- build_crowd_data()
+  dc_i <- dc$dc_i
 }
 
 if (rebuild_official_dataframe) {
-  do <- build_official_data()
+  do_i <- build_official_data()
 }
 
-data <- rbind(do, dc) %>% select(StateUt, Date, Total, Source) %>% 
+data <- rbind(do_i, dc_i) %>% select(StateUt, Date, Total, Source) %>% 
   group_by(Date, Source) %>%
   summarise(Total = sum(Total)) %>% group_by(Source) %>%
   mutate( TotalPrev = lag(Total, default = 0, order_by = Date)) %>%
