@@ -229,7 +229,7 @@ animate <- T
     animate(
       p2,
       renderer=gifski_renderer( loop = T ),
-      end_pause = 35
+      end_pause = 40
     )
   }
 ```
