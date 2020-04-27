@@ -103,7 +103,6 @@ knitr::opts_chunk$set(fig.width=8, fig.height=5)
 
 <!-- ## Current Status -->
 
-
 ```{r echo=F, results='asis', layout="l-body-outset"}
 
   data_today <- data_i_aggregated_long %>%
@@ -129,167 +128,10 @@ https://github.com/CSSEGISandData/COVID-19
 
 Last update at **`r Sys.time()`**
 
-
 ## Different cross sections of COVID19 data {.tabset .tabset-fade}
 
 &nbsp;
 &nbsp;
-
-### **Progression**
-
-&nbsp;
-
-Statewise progression of the cumulative number of cases against the number of days since first report
-
-```{r include=F}
-
-animate <- T
-
-###
-
-  data_anim_2 <-  dc_i %>% select(StateUt, Date, Total) %>% ungroup() %>%
-    mutate(Day = as.integer(strftime(Date, format = "%j")) ) %>%
-    group_by(StateUt) %>%
-    mutate( DaysSince0 = Day - min(Day)  ) %>%
-    mutate( MaxDays = max(DaysSince0) ) %>%
-    ungroup() %>%
-    filter(Total > 2) %>%
-    mutate(label =  paste(Total, StateUt, sep=" | "))
-
-  y_max <- max(data_anim_2$Total)
-  x_max <- max(data_anim_2$DaysSince0)
-  x_label <- x_max + 2
-
-  labels_anim_2 <- data_anim_2 %>%
-    filter(Total > 50) %>%
-    filter(Date == Sys.Date()-1 ) %>%
-    arrange( Total ) %>%
-    mutate(yend = (y_max/n())*row_number()) %>%
-    select(StateUt, yend)
-
-  data_anim_2 <- left_join(data_anim_2, labels_anim_2, by = c("StateUt") )
-
-###
-  data_anim <- data_i_total %>% 
-    filter(Source == 'Crowd Source') %>%
-    mutate(Day = as.integer(strftime(Date, format = "%j")) ) %>%
-    group_by(StateUt) %>% 
-    mutate( DaysSince0 = Day - min(Day)  ) %>% 
-    mutate( MaxDays = max(DaysSince0) ) %>%
-    mutate( MaxCases = max(round(Total))) %>%
-    ungroup() %>%
-    mutate(label =  paste(Total, StateUt, sep=" | "))
-###
-
-```
-
-```{r animation_2, echo=FALSE, message=F, warning=F, fig.height = 6, fig.width = 10}
-
-  if (animate) {
-    p2 <- ggplot(
-          data = data_anim_2,
-          aes(x=DaysSince0, y=Total, fill = StateUt, size = Total^(0.5), color=StateUt )
-          )  +
-        geom_point(shape = 21, color = 'black', alpha=0.7) +
-        geom_line(size = 0.3, alpha=0.5)  +
-        geom_label(
-          aes(x=x_label, y = yend, label = label, fill=StateUt),
-          color='white',
-          hjust = 0,
-          size=3) +
-        geom_segment(
-          aes(xend = x_label, yend = yend, color = StateUt),
-          linetype = "11",
-          size=0.2,
-          alpha=0.5) +
-        theme_minimal() +
-        theme(
-          axis.text=element_text(size=10, color = "darkgrey"),
-          axis.title=element_text(size=12),
-          legend.position = 'off',
-          plot.title = element_text(size = 12, hjust = 0.5),
-          plot.margin = margin(15, 100, 15, 10),
-          panel.grid.major = element_blank(),
-          panel.grid.minor = element_blank()
-          ) +
-        coord_cartesian(clip = 'off')  +
-        scale_color_viridis_d(option="inferno", end = 0.9) +
-        scale_fill_viridis_d(option="inferno", end = 0.9) +
-        xlab("Number of day since first report") +
-        ylab("Number of cases (Cumulative)")  +
-        scale_radius(
-          range = c(1, 7),
-          trans = "identity",
-          guide = "legend"
-        ) +
-        labs(title = 'Date {frame_along}', fontface = "bold") +
-        transition_time(Date) + ease_aes('cubic-in-out') +
-        transition_reveal(Date)
-
-    animate(
-      p2,
-      renderer=gifski_renderer( loop = T ),
-      end_pause = 40
-    )
-  }
-```
-
-Code: https://github.com/Impactech/COVID19_India/blob/master/IndiaTimeseries_v2.R
-
-
-```{r animation_1, echo=FALSE, message=F, warning=F, fig.height = 6, fig.width = 10}
-  ani.options(end_pause = 30 )
-  options(
-    gganimate.nframes = 120, 
-    gganimate.fps=8
-  )
-  
-
-  if (animate) {
-    p <- ggplot(
-      data = data_anim,
-      aes(
-        x=reorder(StateUt, -MaxCases), 
-        y=DaysSince0, 
-        fill = Total^(0.3), 
-        size = Total^(0.3),
-        color = Total^(0.3) )
-      )  +
-    geom_line(alpha=0.3) +
-    geom_label(aes(label = as.character(Total) ), size=3, color='white', nudge_x = 0) +
-    theme_minimal() +
-    theme(
-      legend.position = 'off',
-      axis.text.x = element_text(angle = 45, hjust = 1, size=8),
-      panel.grid.major = element_blank(),
-      panel.grid.minor = element_blank(),
-      axis.title.x = element_blank(),
-      plot.title = element_text(hjust = 0.5, size=13)
-      ) +
-    coord_cartesian(clip = 'off')  +
-    scale_color_viridis_c(option="inferno", direction = -1) +
-    scale_fill_viridis_c(option="inferno", direction = -1) +
-    ylab("Days since first case reported")  +
-    scale_radius(
-      range = c(1, 12),
-      trans = "identity",
-      guide = "legend"
-    ) + labs( title = '{frame_along}', fontface = "bold" ) +
-    transition_time(Date) + ease_aes('cubic-in-out') +
-    transition_reveal(Date)
-  
-    animate(
-      p,
-      renderer=gifski_renderer( loop = T ),
-      end_pause = 35
-    )
-  }
-```
-
-Data: Crowd sourced
-
-Code: https://github.com/Impactech/COVID19_India/blob/master/IndiaTimeseriesAnimation.R
-
 
 ### **Pan India**
 
@@ -421,6 +263,331 @@ Code: https://github.com/Impactech/COVID19_India/blob/master/DailyNewCasesIndia.
 
 Code: https://github.com/Impactech/COVID19_India/blob/master/IndiaCumulativeCases_v2.R
 
+### **Statewise** 
+&nbsp;
+
+```{r 'Statewise Data Calculation', include = F }
+
+  data_statewise <- data_i_total %>% group_by(Source) %>%
+    mutate(Day = as.integer(strftime(Date, format = "%j")) ) %>%
+    ungroup() %>%
+    ###
+    group_by(StateUt, Source) %>% 
+    mutate( DaysSince0 = Day - min(Day)  ) %>% 
+    mutate( MaxDays = max(DaysSince0) ) %>%
+    mutate( MaxCases = max(Total) ) %>%
+    ungroup() %>%
+    ###
+    mutate(label =  paste(MaxCases, StateUt, sep=" | ")) %>%
+    filter(Date > dmy('01-03-2020'))
+
+
+d_i_long_total <- d_i_long %>% 
+  filter(Status == 'Total') %>% 
+  group_by(Source) %>%
+  filter(Date == max(Date)) %>%
+  ungroup() %>%
+  filter(Cumulative > 5) %>%
+  filter(!(StateUt == 'unassigned'))
+
+d_i_long_total$StateUt[d_i_long_total$StateUt == "Telengana"] <- "Telangana"
+
+
+```
+
+```{r 'statewise growth', include=F}
+
+data_i_statewise_growth <- rbind(do_i, dc_i) %>% 
+    ungroup() %>%
+    mutate(
+      StateUt = ifelse( 
+        (StateUt %in% c('Telengana')), 'Telangana', StateUt ) 
+      ) %>%
+    group_by(StateUt, Source) %>% 
+    mutate(MaxCases = max(Total)) %>% 
+    filter(Date >= dmy('25-03-2020')) %>%
+    filter(Source == 'Ministry of Health and Family Welfare') %>%
+    ungroup() 
+
+threshold <- min(tail(sort(unique(data_i_statewise_growth$MaxCases)), 6))
+
+data_i_statewise_growth <- data_i_statewise_growth %>% 
+  filter(MaxCases >= threshold) %>%
+  select(StateUt, Date, Total, Source, MaxCases) %>% 
+  group_by(Date, Source, StateUt, MaxCases) %>%
+  summarise( Total = sum(Total)) %>% 
+  ungroup() %>%
+  group_by(Source, StateUt, MaxCases) %>%
+  mutate( TotalPrev = lag(Total, default = 0, order_by = Date)) %>%
+  mutate( DatePrev = lag(Date, order_by = Date) ) %>% 
+  mutate( DateCurPrev = as.integer(Date - DatePrev) ) %>%
+  mutate( 
+    DailyRate = round((Total - TotalPrev)*100/(DateCurPrev*TotalPrev) ) 
+    ) %>%
+  mutate( NewCases = (Total - TotalPrev) ) %>%
+  ungroup() %>%
+  select(-c(Total, TotalPrev, DatePrev, DateCurPrev)) %>%
+  pivot_longer(-c(Date, Source, StateUt, MaxCases), names_to = 'Metric') %>%
+  mutate(Series = paste(StateUt, MaxCases, sep = ' | '))
+```  
+
+#### Statewise Growth Rate of the worst affected states
+&nbsp;
+
+The following plot is the Smoothed conditional mean of the cumulative daily growth rate. The actual data is noisy. Smoothed mean gives a better picture of the overall trend.  
+
+
+
+```{r 'statwise growth plot', echo = F, message=F, warning=F, fig.height = 6, fig.width = 8}
+ggplot(
+    data = data_i_statewise_growth,  
+    aes(x = Date, y = value, color=reorder(Series, -MaxCases))
+    ) + 
+    facet_wrap(~Metric, ncol=1, scales = 'free_y') +
+    geom_smooth(size=1.2, alpha = 0.2 , se = F) + 
+    theme_minimal() +
+    theme(
+      legend.title = element_blank(), 
+      axis.title = element_blank(),
+      axis.text.x = element_text(angle = 30),
+      strip.text = element_text(hjust = 0),
+      legend.position = 'top'
+    )
+
+```
+
+Code: https://github.com/Impactech/COVID19_India/blob/master/IndiaGrowthRateStatewise.R
+
+Data: Ministry of Health and Family Welfare
+
+&nbsp;
+
+#### State wise split of cumulative number of cases as per last update.
+&nbsp;
+
+```{r echo=FALSE, fig.cap="Statewise Split", message=FALSE, warning=FALSE, fig.height = 5, fig.width = 8}
+ ggplot(
+      data = d_i_long_total, 
+      aes(x = reorder( StateUt, Cumulative ), y = Cumulative, fill = Source)
+      ) + 
+    geom_bar(position = 'dodge', stat = 'identity') +
+    theme(
+      legend.position = c(0.4, 0.8),
+      panel.grid.major = element_blank(),
+      panel.background = element_blank(),
+      axis.title.x = element_blank(),
+      axis.text.x = element_text(angle = 45, hjust = 1)
+      ) + scale_fill_viridis_d(option = 'cividis', end = 0.9)
+```
+
+Code: https://github.com/Impactech/COVID19_India/blob/master/IndiaStateWise.R
+
+&nbsp;
+
+#### Statewise growth in cumulative number of cases. 
+&nbsp;
+
+
+```{r echo=FALSE, fig.cap="Statewise Split", message=FALSE, warning=FALSE, fig.height = 8, fig.width = 8}
+
+  ggplot(
+      data = data_statewise %>% filter(Source == 'Crowd Source'), 
+      aes(x=Date, y=reorder(label, MaxCases), 
+          fill = StateUt, size = Total^(0.3))
+      ) +
+    geom_point(shape = 21, color = 'white') + 
+    geom_vline(xintercept = dmy('24-03-2020'), linetype = '11' ) + 
+    annotate(
+    "text", x = dmy('25-03-2020'), y = 2, 
+    size = 4, label = "Lockdown", hjust = 0.5, vjust = -1, fontface =1  ) +
+    theme_minimal() + 
+    theme(
+      legend.position = 'off',
+      axis.title.x = element_blank(),
+      axis.title.y = element_blank(),
+      # panel.grid.major = element_blank(), 
+      panel.grid.minor = element_blank(),
+      axis.text.y = element_text(size=10,face="bold"),
+      axis.text.x = element_text(angle = 30, hjust=0)
+    ) + 
+    scale_color_viridis_d(option="inferno", end = 0.9) + 
+    scale_fill_viridis_d(option="inferno", end = 0.9) + 
+    scale_y_discrete(position = "right") +
+    scale_x_date(position = "top", date_breaks = '7 days') +
+    scale_radius(
+      range = c(1, 12),
+      trans = "identity",
+      guide = "legend"
+    ) + 
+    coord_cartesian(clip = 'off') + 
+    theme(legend.position='none')
+
+```
+
+Data: Crowd sourced
+
+Code: https://github.com/Impactech/COVID19_India/blob/master/IndiaTimeseries_v3.R
+
+&nbsp;
+
+
+### **Animation**
+
+&nbsp;
+
+Statewise progression of the cumulative number of cases against the number of days since first report
+
+```{r include=F}
+
+animate <- T
+
+###
+
+  data_anim_2 <-  dc_i %>% select(StateUt, Date, Total) %>% ungroup() %>%
+    mutate(Day = as.integer(strftime(Date, format = "%j")) ) %>%
+    group_by(StateUt) %>%
+    mutate( DaysSince0 = Day - min(Day)  ) %>%
+    mutate( MaxDays = max(DaysSince0) ) %>%
+    ungroup() %>%
+    filter(Total > 2) %>%
+    mutate(label =  paste(Total, StateUt, sep=" | "))
+
+  y_max <- max(data_anim_2$Total)
+  x_max <- max(data_anim_2$DaysSince0)
+  x_label <- x_max + 2
+
+  labels_anim_2 <- data_anim_2 %>%
+    filter(Total > 50) %>%
+    filter(Date == Sys.Date()-1 ) %>%
+    arrange( Total ) %>%
+    mutate(yend = (y_max/n())*row_number()) %>%
+    select(StateUt, yend)
+
+  data_anim_2 <- left_join(data_anim_2, labels_anim_2, by = c("StateUt") )
+
+###
+  data_anim <- data_i_total %>% 
+    filter(Source == 'Crowd Source') %>%
+    mutate(Day = as.integer(strftime(Date, format = "%j")) ) %>%
+    group_by(StateUt) %>% 
+    mutate( DaysSince0 = Day - min(Day)  ) %>% 
+    mutate( MaxDays = max(DaysSince0) ) %>%
+    mutate( MaxCases = max(round(Total))) %>%
+    ungroup() %>%
+    mutate(label =  paste(Total, StateUt, sep=" | "))
+###
+
+```
+
+```{r animation_2, echo=FALSE, message=F, warning=F, fig.height = 6, fig.width = 10}
+
+  if (animate) {
+    p2 <- ggplot(
+          data = data_anim_2,
+          aes(x=DaysSince0, y=Total, fill = StateUt, size = Total^(0.5), color=StateUt )
+          )  +
+        geom_point(shape = 21, color = 'black', alpha=0.7) +
+        geom_line(size = 0.3, alpha=0.5)  +
+        geom_label(
+          aes(x=x_label, y = yend, label = label, fill=StateUt),
+          color='white',
+          hjust = 0,
+          size=3) +
+        geom_segment(
+          aes(xend = x_label, yend = yend, color = StateUt),
+          linetype = "11",
+          size=0.2,
+          alpha=0.5) +
+        theme_minimal() +
+        theme(
+          axis.text=element_text(size=10, color = "darkgrey"),
+          axis.title=element_text(size=12),
+          legend.position = 'off',
+          plot.title = element_text(size = 12, hjust = 0.5),
+          plot.margin = margin(15, 100, 15, 10),
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank()
+          ) +
+        coord_cartesian(clip = 'off')  +
+        scale_color_viridis_d(option="inferno", end = 0.9) +
+        scale_fill_viridis_d(option="inferno", end = 0.9) +
+        xlab("Number of day since first report") +
+        ylab("Number of cases (Cumulative)")  +
+        scale_radius(
+          range = c(1, 7),
+          trans = "identity",
+          guide = "legend"
+        ) +
+        labs(title = 'Date {frame_along}', fontface = "bold") +
+        transition_time(Date) + ease_aes('cubic-in-out') +
+        transition_reveal(Date)
+
+    animate(
+      p2,
+      renderer=gifski_renderer( loop = T ),
+      end_pause = 40
+    )
+  }
+```
+
+Code: https://github.com/Impactech/COVID19_India/blob/master/IndiaTimeseries_v2.R
+
+
+<!-- ```{r animation_1, echo=FALSE, message=F, warning=F, fig.height = 6, fig.width = 10} -->
+<!--   ani.options(end_pause = 30 ) -->
+<!--   options( -->
+<!--     gganimate.nframes = 120,  -->
+<!--     gganimate.fps=8 -->
+<!--   ) -->
+
+
+<!--   if (animate) { -->
+<!--     p <- ggplot( -->
+<!--       data = data_anim, -->
+<!--       aes( -->
+<!--         x=reorder(StateUt, -MaxCases),  -->
+<!--         y=DaysSince0,  -->
+<!--         fill = Total^(0.3),  -->
+<!--         size = Total^(0.3), -->
+<!--         color = Total^(0.3) ) -->
+<!--       )  + -->
+<!--     geom_line(alpha=0.3) + -->
+<!--     geom_label(aes(label = as.character(Total) ), size=3, color='white', nudge_x = 0) + -->
+<!--     theme_minimal() + -->
+<!--     theme( -->
+<!--       legend.position = 'off', -->
+<!--       axis.text.x = element_text(angle = 45, hjust = 1, size=8), -->
+<!--       panel.grid.major = element_blank(), -->
+<!--       panel.grid.minor = element_blank(), -->
+<!--       axis.title.x = element_blank(), -->
+<!--       plot.title = element_text(hjust = 0.5, size=13) -->
+<!--       ) + -->
+<!--     coord_cartesian(clip = 'off')  + -->
+<!--     scale_color_viridis_c(option="inferno", direction = -1) + -->
+<!--     scale_fill_viridis_c(option="inferno", direction = -1) + -->
+<!--     ylab("Days since first case reported")  + -->
+<!--     scale_radius( -->
+<!--       range = c(1, 12), -->
+<!--       trans = "identity", -->
+<!--       guide = "legend" -->
+<!--     ) + labs( title = '{frame_along}', fontface = "bold" ) + -->
+<!--     transition_time(Date) + ease_aes('cubic-in-out') + -->
+<!--     transition_reveal(Date) -->
+
+<!--     animate( -->
+<!--       p, -->
+<!--       renderer=gifski_renderer( loop = T ), -->
+<!--       end_pause = 35 -->
+<!--     ) -->
+<!--   } -->
+<!-- ``` -->
+
+<!-- Data: Crowd sourced -->
+
+<!-- Code: https://github.com/Impactech/COVID19_India/blob/master/IndiaTimeseriesAnimation.R -->
+&nbsp;
+
+
 ### **Yesterday**
 
 &nbsp;
@@ -535,110 +702,6 @@ $$ G_{WeeklyMean} = NewCases_{CurrentWeek}*100/(Sunday_{Previous} - Sunday_{Late
     )
 
 ```
-
-
-### **Statewise** 
-
-&nbsp;
-
-#### Statewise growth in cumulative number of cases. 
-
-```{r include = F }
-
-  data_statewise <- data_i_total %>% group_by(Source) %>%
-    mutate(Day = as.integer(strftime(Date, format = "%j")) ) %>%
-    ungroup() %>%
-    ###
-    group_by(StateUt, Source) %>% 
-    mutate( DaysSince0 = Day - min(Day)  ) %>% 
-    mutate( MaxDays = max(DaysSince0) ) %>%
-    mutate( MaxCases = max(Total) ) %>%
-    ungroup() %>%
-    ###
-    mutate(label =  paste(MaxCases, StateUt, sep=" | ")) %>%
-    filter(Date > dmy('01-03-2020'))
-
-
-d_i_long_total <- d_i_long %>% 
-  filter(Status == 'Total') %>% 
-  group_by(Source) %>%
-  filter(Date == max(Date)) %>%
-  ungroup() %>%
-  filter(Cumulative > 5) %>%
-  filter(!(StateUt == 'unassigned'))
-
-d_i_long_total$StateUt[d_i_long_total$StateUt == "Telengana"] <- "Telangana"
-
-
-```
-
-
-```{r echo=FALSE, fig.cap="Statewise Split", message=FALSE, warning=FALSE, fig.height = 8, fig.width = 8}
-
-  ggplot(
-      data = data_statewise %>% filter(Source == 'Crowd Source'), 
-      aes(x=Date, y=reorder(label, MaxCases), 
-          fill = StateUt, size = Total^(0.3))
-      ) +
-    geom_point(shape = 21, color = 'white') + 
-    geom_vline(xintercept = dmy('24-03-2020'), linetype = '11' ) + 
-    annotate(
-    "text", x = dmy('25-03-2020'), y = 2, 
-    size = 4, label = "Lockdown", hjust = 0.5, vjust = -1, fontface =1  ) +
-    theme_minimal() + 
-    theme(
-      legend.position = 'off',
-      axis.title.x = element_blank(),
-      axis.title.y = element_blank(),
-      # panel.grid.major = element_blank(), 
-      panel.grid.minor = element_blank(),
-      axis.text.y = element_text(size=10,face="bold"),
-      axis.text.x = element_text(angle = 30, hjust=0)
-    ) + 
-    scale_color_viridis_d(option="inferno", end = 0.9) + 
-    scale_fill_viridis_d(option="inferno", end = 0.9) + 
-    scale_y_discrete(position = "right") +
-    scale_x_date(position = "top", date_breaks = '7 days') +
-    scale_radius(
-      range = c(1, 12),
-      trans = "identity",
-      guide = "legend"
-    ) + 
-    coord_cartesian(clip = 'off') + 
-    theme(legend.position='none')
-
-```
-
-Data: Crowd sourced
-
-Code: https://github.com/Impactech/COVID19_India/blob/master/IndiaTimeseries_v3.R
-
-
-
-&nbsp;
-
-#### State wise split of cumulative number of cases as per last update.
-
-```{r echo=FALSE, fig.cap="Statewise Split", message=FALSE, warning=FALSE, fig.height = 5, fig.width = 8}
- ggplot(
-      data = d_i_long_total, 
-      aes(x = reorder( StateUt, Cumulative ), y = Cumulative, fill = Source)
-      ) + 
-    geom_bar(position = 'dodge', stat = 'identity') +
-    theme(
-      legend.position = c(0.4, 0.8),
-      panel.grid.major = element_blank(),
-      panel.background = element_blank(),
-      axis.title.x = element_blank(),
-      axis.text.x = element_text(angle = 45, hjust = 1)
-      ) + scale_fill_viridis_d(option = 'cividis', end = 0.9)
-  # ggplotly(p) %>% layout(legend = list(
-  #     orientation = "h"
-  #   )
-  # ) %>% config(displayModeBar = F)
-```
-
-Code: https://github.com/Impactech/COVID19_India/blob/master/IndiaStateWise.R
 
 
 ### **Agewise**
