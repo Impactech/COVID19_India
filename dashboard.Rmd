@@ -443,7 +443,7 @@ animate <- T
 
 ###
 
-  data_anim_2 <-  dc_i %>% select(StateUt, Date, Total) %>% ungroup() %>%
+  data_anim_2 <-  do_i %>% select(StateUt, Date, Total) %>% ungroup() %>%
     mutate(Day = as.integer(strftime(Date, format = "%j")) ) %>%
     group_by(StateUt) %>%
     mutate( DaysSince0 = Day - min(Day)  ) %>%
@@ -466,15 +466,15 @@ animate <- T
   data_anim_2 <- left_join(data_anim_2, labels_anim_2, by = c("StateUt") )
 
 ###
-  data_anim <- data_i_total %>% 
-    filter(Source == 'Crowd Source') %>%
-    mutate(Day = as.integer(strftime(Date, format = "%j")) ) %>%
-    group_by(StateUt) %>% 
-    mutate( DaysSince0 = Day - min(Day)  ) %>% 
-    mutate( MaxDays = max(DaysSince0) ) %>%
-    mutate( MaxCases = max(round(Total))) %>%
-    ungroup() %>%
-    mutate(label =  paste(Total, StateUt, sep=" | "))
+  # data_anim <- data_i_total %>% 
+  #   filter(Source == 'Crowd Source') %>%
+  #   mutate(Day = as.integer(strftime(Date, format = "%j")) ) %>%
+  #   group_by(StateUt) %>% 
+  #   mutate( DaysSince0 = Day - min(Day)  ) %>% 
+  #   mutate( MaxDays = max(DaysSince0) ) %>%
+  #   mutate( MaxCases = max(round(Total))) %>%
+  #   ungroup() %>%
+  #   mutate(label =  paste(Total, StateUt, sep=" | "))
 ###
 
 ```

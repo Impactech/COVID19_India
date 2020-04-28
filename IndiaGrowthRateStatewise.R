@@ -7,15 +7,11 @@ source('./source_crowd_data.r')
 source('./source_official_data.r')
 
 pal <- "cividis"
-rebuild_crowdsource_dataframe <- F
-rebuild_official_dataframe <- F
+rebuild_dataframe <- F
 
-if (rebuild_crowdsource_dataframe) {
+if (rebuild_dataframe) {
   dc <- build_crowd_data()
   dc_i <- dc$dc_i %>% ungroup()
-}
-
-if (rebuild_official_dataframe) {
   do_i <- build_official_data() %>% ungroup()
 }
 
@@ -50,6 +46,7 @@ data <- d %>%
 p1 <- ggplot(data = data,  aes(x = Date, y = value, color=reorder(Series, -MaxCases))) + 
   facet_wrap(~Metric, ncol=1, scales = 'free_y') +
   geom_smooth(size=1.2, alpha = 0.2 , se = F) + 
+  geom_line(size = 0.4, alpha=0.4) + geom_point(shape=21, size=1, alpha=0.4) +
   theme_minimal() +
   theme(
     legend.title = element_blank(), 
