@@ -34,7 +34,7 @@ knitr::opts_chunk$set(fig.width=8, fig.height=5)
   library(jsonlite)
   # library(plotly)
   # library(plotly)
-  source('./source_crowd_data.r')
+  source('./source_crowd_data_v2.r')
   source('./source_official_data.r')
   source('./source_world_data.R')
 ```
